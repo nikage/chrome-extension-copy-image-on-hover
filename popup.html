@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Image Tag Copier Options</title>
+  <link rel="stylesheet" type="text/css" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Image Tag Copier Settings</h2>
+    
+    <div class="option-group">
+      <label>
+        <input type="checkbox" id="showFeedback" checked>
+        Show visual feedback when copying
+      </label>
+    </div>
+
+    <div class="option-group">
+      <label>Copy format:</label>
+      <select id="copyFormat">
+        <option value="full">Full tag with all attributes</option>
+        <option value="minimal">Minimal tag (src only)</option>
+        <option value="markdown">Markdown format</option>
+      </select>
+    </div>
+
+    <div class="option-group">
+      <label>
+        <input type="checkbox" id="includeSize">
+        Include width/height attributes
+      </label>
+    </div>
+
+    <div class="option-group">
+      <label>
+        <input type="checkbox" id="stripAttributes">
+        Strip all attributes except src
+      </label>
+      <small class="hint">This will override other attribute settings</small>
+    </div>
+
+    <div class="status-message" id="status"></div>
+    
+    <div class="button-group">
+      <button id="save">Save Settings</button>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html> 
