@@ -151,11 +151,7 @@ function showToast(message: string, error: boolean = false) {
     toast = document.createElement('div');
     toast.id = 'toast';
     toast.style.position = 'fixed';
-    toast.style.left = '50%';
-    toast.style.bottom = '18px';
-    toast.style.transform = 'translateX(-50%)';
-    toast.style.minWidth = '120px';
-    toast.style.maxWidth = '90%';
+    toast.style.maxWidth = '250px';
     toast.style.background = 'rgba(16, 19, 26, 0.98)';
     toast.style.color = error ? '#ff4c4c' : '#00eaff';
     toast.style.borderRadius = '8px';
@@ -166,15 +162,48 @@ function showToast(message: string, error: boolean = false) {
     toast.style.opacity = '0';
     toast.style.pointerEvents = 'none';
     toast.style.zIndex = '10000';
-    toast.style.transition = 'opacity 0.3s, bottom 0.3s';
+    toast.style.transition = 'opacity 0.3s, top 0.3s, left 0.3s, bottom 0.3s';
     document.body.appendChild(toast);
   }
   toast.textContent = message;
   toast.style.color = error ? '#ff4c4c' : '#00eaff';
+
+  // Position below hovered image if available
+  if (hoveredImage) {
+    const rect = hoveredImage.getBoundingClientRect();
+    // Default position below image
+    let left = rect.left + rect.width / 2;
+    let top = rect.bottom + 8;
+    toast.style.left = `${left}px`;
+    toast.style.top = `${top}px`;
+    toast.style.bottom = '';
+    toast.style.transform = 'translateX(-50%)';
+    toast.style.right = '';
+    // Ensure toast is not cropped by viewport
+    setTimeout(() => {
+      const toastRect = toast.getBoundingClientRect();
+      // Adjust left if cropped on the left or right
+      if (toastRect.left < 0) {
+        toast.style.left = `${toastRect.width / 2 + 8}px`;
+      } else if (toastRect.right > window.innerWidth) {
+        toast.style.left = `${window.innerWidth - toastRect.width / 2 - 8}px`;
+      }
+      // Adjust top if cropped at the bottom
+      if (toastRect.bottom > window.innerHeight) {
+        let newTop = Math.max(window.innerHeight - toastRect.height - 8, rect.top - toastRect.height - 8);
+        toast.style.top = `${newTop}px`;
+      }
+    }, 0);
+  } else {
+    toast.style.left = '50%';
+    toast.style.bottom = '18px';
+    toast.style.top = '';
+    toast.style.transform = 'translateX(-50%)';
+    toast.style.right = '';
+  }
+
   toast.style.opacity = '1';
-  toast.style.bottom = '32px';
   setTimeout(() => {
     toast.style.opacity = '0';
-    toast.style.bottom = '18px';
   }, 1800);
 } 
