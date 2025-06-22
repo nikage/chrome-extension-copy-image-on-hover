@@ -86,16 +86,48 @@ async function copyImageToClipboard(img: HTMLImageElement): Promise<boolean> {
     await navigator.clipboard.write([data]);
     return true;
   } catch (err) {
-    // Show a user-friendly message and fallback to copying the tag
-    showToast('Cannot copy image due to browser security (CORS). Copied tag instead.', true);
-    try {
-      if (hoveredImage) {
-        const copyFormat = isCopyFormat(settings.copyFormat) ? settings.copyFormat : 'full';
-        const imgTag = getFormattedImageTag(hoveredImage, { ...settings, copyFormat });
-        await navigator.clipboard.writeText(imgTag);
+    // Screenshot fallback for CORS images
+    if (hoveredImage) {
+      try {
+        const rect = hoveredImage.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        // Use only viewport coordinates for cropping
+        const sx = Math.max(rect.left, 0) * dpr;
+        const sy = Math.max(rect.top, 0) * dpr;
+        const sw = Math.max(Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0), 0) * dpr;
+        const sh = Math.max(Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0), 0) * dpr;
+        const response = await new Promise<{dataUrl: string}>(resolve => {
+          chrome.runtime.sendMessage({ type: 'screenshot' }, resolve);
+        });
+        if (response && response.dataUrl) {
+          const screenshotImg = new window.Image();
+          screenshotImg.src = response.dataUrl;
+          await new Promise(res => { screenshotImg.onload = res; });
+          const cropCanvas = document.createElement('canvas');
+          cropCanvas.width = sw;
+          cropCanvas.height = sh;
+          const cropCtx = cropCanvas.getContext('2d');
+          if (cropCtx) {
+            cropCtx.drawImage(
+              screenshotImg,
+              sx, sy, sw, sh,
+              0, 0, sw, sh
+            );
+            const blob = await new Promise<Blob | null>(resolve => cropCanvas.toBlob(resolve));
+            if (blob) {
+              const data = new ClipboardItem({ 'image/png': blob });
+              await navigator.clipboard.write([data]);
+              showToast('Screenshot fallback copied!', false);
+              return true;
+            }
+          }
+        }
+        showToast('Screenshot fallback failed.', true);
+      } catch (e) {
+        showToast('Screenshot fallback failed.', true);
       }
-    } catch (e) {
-      showToast('Copy failed.', true);
+    } else {
+      showToast('Cannot copy image due to browser security (CORS).', true);
     }
     return false;
   }
