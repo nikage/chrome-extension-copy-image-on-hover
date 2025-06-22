@@ -74,15 +74,29 @@ async function copyImageToClipboard(img: HTMLImageElement): Promise<boolean> {
     const ctx = canvas.getContext('2d');
     if (!ctx) return false;
     ctx.drawImage(img, 0, 0);
-    const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve));
-    if (!blob) return false;
-    const data = new ClipboardItem({
-      'image/png': blob
+    const blob = await new Promise<Blob | null>(resolve => {
+      try {
+        canvas.toBlob(resolve);
+      } catch (e) {
+        resolve(null);
+      }
     });
+    if (!blob) throw new Error('Tainted canvas or export failed');
+    const data = new ClipboardItem({ 'image/png': blob });
     await navigator.clipboard.write([data]);
     return true;
   } catch (err) {
-    console.error('Failed to copy image:', err);
+    // Show a user-friendly message and fallback to copying the tag
+    showToast('Cannot copy image due to browser security (CORS). Copied tag instead.', true);
+    try {
+      if (hoveredImage) {
+        const copyFormat = isCopyFormat(settings.copyFormat) ? settings.copyFormat : 'full';
+        const imgTag = getFormattedImageTag(hoveredImage, { ...settings, copyFormat });
+        await navigator.clipboard.writeText(imgTag);
+      }
+    } catch (e) {
+      showToast('Copy failed.', true);
+    }
     return false;
   }
 }
@@ -125,4 +139,42 @@ document.addEventListener('keydown', (event) => {
   if (hoveredImage && (event.metaKey || event.ctrlKey) && event.key === 'c') {
     handleCopy();
   }
-}); 
+});
+
+function isCopyFormat(val: string): val is 'full' | 'minimal' | 'markdown' {
+  return val === 'full' || val === 'minimal' || val === 'markdown';
+}
+
+function showToast(message: string, error: boolean = false) {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.position = 'fixed';
+    toast.style.left = '50%';
+    toast.style.bottom = '18px';
+    toast.style.transform = 'translateX(-50%)';
+    toast.style.minWidth = '120px';
+    toast.style.maxWidth = '90%';
+    toast.style.background = 'rgba(16, 19, 26, 0.98)';
+    toast.style.color = error ? '#ff4c4c' : '#00eaff';
+    toast.style.borderRadius = '8px';
+    toast.style.padding = '10px 24px';
+    toast.style.fontSize = '15px';
+    toast.style.textAlign = 'center';
+    toast.style.boxShadow = '0 0 8px #00eaff33';
+    toast.style.opacity = '0';
+    toast.style.pointerEvents = 'none';
+    toast.style.zIndex = '10000';
+    toast.style.transition = 'opacity 0.3s, bottom 0.3s';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.style.color = error ? '#ff4c4c' : '#00eaff';
+  toast.style.opacity = '1';
+  toast.style.bottom = '32px';
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.bottom = '18px';
+  }, 1800);
+} 
