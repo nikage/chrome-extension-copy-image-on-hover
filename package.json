@@ -4,7 +4,8 @@
   "description": "A powerful Chrome extension that allows you to copy image tags and actual images by hovering over them and pressing Cmd+C (Mac) or Ctrl+C (Windows/Linux).",
   "main": "content.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "release": "rm -rf dist && mkdir -p dist && npx tsc --outDir dist && cp manifest.json dist/ && cp popup.html dist/ && cp popup.css dist/ && cp -R icons dist/"
   },
   "repository": {
     "type": "git",
@@ -18,7 +19,9 @@
   },
   "homepage": "https://github.com/nikage/chrome-extension-copy-image-on-hover#readme",
   "devDependencies": {
+    "@types/chrome": "^0.0.326",
     "@types/node": "^24.0.3",
+    "@types/web": "^0.0.243",
     "typescript": "^5.8.3"
   }
 }
