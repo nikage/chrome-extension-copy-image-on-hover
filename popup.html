@@ -16,7 +16,16 @@
     </div>
 
     <div class="option-group">
-      <label>Copy format:</label>
+      <label>What to copy:</label>
+      <select id="copyMode">
+        <option value="tag">HTML tag only</option>
+        <option value="image">Image only</option>
+        <option value="both">Both tag and image</option>
+      </select>
+    </div>
+
+    <div class="option-group tag-options">
+      <label>Tag format:</label>
       <select id="copyFormat">
         <option value="full">Full tag with all attributes</option>
         <option value="minimal">Minimal tag (src only)</option>
