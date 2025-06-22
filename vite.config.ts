@@ -7,10 +7,9 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         { src: 'manifest.json', dest: '.' },
-        { src: 'src/popup.html', dest: '.' },
-        { src: 'src/popup.css', dest: '.' },
-        { src: 'src/background.js', dest: '.' },
-        { src: 'icons', dest: '.' }
+        { src: 'src/*.html', dest: '.' },
+        { src: 'src/*.css', dest: '.' },
+        { src: 'icons', dest: '.' },
       ]
     })
   ],
@@ -21,6 +20,7 @@ export default defineConfig({
       input: {
         content: resolve(__dirname, 'src/content.ts'),
         popup: resolve(__dirname, 'src/popup.ts'),
+        background: resolve(__dirname, 'src/background.ts'),
       },
       output: {
         entryFileNames: '[name].js',

@@ -6,8 +6,7 @@
   "scripts": {
     "test": "jest",
     "build:vite": "vite build",
-    "postbuild:vite": "cp manifest.json dist/ && cp src/popup.html dist/ && cp src/popup.css dist/ && cp src/background.js dist/ && cp -R icons dist/",
-    "release": "npm test && rm -rf dist && mkdir dist && npm run build:vite && npm run postbuild:vite",
+    "release": "npm test && rm -rf dist && mkdir dist && npm run build:vite",
     "coverage": "jest --coverage"
   },
   "repository": {
