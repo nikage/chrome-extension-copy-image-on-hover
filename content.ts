@@ -99,7 +99,10 @@ async function handleCopy(): Promise<void> {
       success = await copyImageToClipboard(hoveredImage);
     }
     if (settings.copyMode === 'both' || settings.copyMode === 'tag') {
-      const imgTag = getFormattedImageTag(hoveredImage, settings);
+      const imgTag = getFormattedImageTag(hoveredImage, {
+        ...settings,
+        copyFormat: settings.copyFormat as 'full' | 'minimal' | 'markdown'
+      });
       await navigator.clipboard.writeText(imgTag);
     }
     if (settings.showFeedback && success && hoveredImage) {

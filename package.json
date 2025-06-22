@@ -5,7 +5,8 @@
   "main": "content.js",
   "scripts": {
     "test": "jest",
-    "release": "rm -rf dist && mkdir -p dist && npx tsc --outDir dist && cp manifest.json dist/ && cp popup.html dist/ && cp popup.css dist/ && cp -R icons dist/"
+    "release": "rm -rf dist && mkdir -p dist && npx tsc --outDir dist && cp manifest.json dist/ && cp popup.html dist/ && cp popup.css dist/ && cp -R icons dist/",
+    "coverage": "jest --coverage"
   },
   "repository": {
     "type": "git",
