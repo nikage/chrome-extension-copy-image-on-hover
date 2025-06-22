@@ -1,0 +1,1 @@
+- [infrastructure] Add TypeScript support: initialized npm, installed TypeScript and @types/node, created tsconfig.json, and updated README.md with usage instructions. (2024-06-17 15:31) 

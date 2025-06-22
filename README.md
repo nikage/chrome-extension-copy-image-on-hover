@@ -173,4 +173,20 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Changelog
 
-See [CHANGELOG.md](./CHANGELOG.md) for a list of changes and version history. 
+See [CHANGELOG.md](./CHANGELOG.md) for a list of changes and version history.
+
+## TypeScript Support
+
+This project now supports TypeScript.
+
+### How to use TypeScript
+- Place your `.ts` files in the project directory.
+- Compile TypeScript to JavaScript using:
+  ```sh
+  npx tsc
+  ```
+- The TypeScript configuration is in `tsconfig.json`.
+- Type definitions for Node.js are included for development convenience.
+
+### Scripts
+You can add build scripts to your `package.json` for easier usage. 
