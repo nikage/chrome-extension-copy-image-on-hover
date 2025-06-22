@@ -1,1 +1,2 @@
-- [infrastructure] Add TypeScript support: initialized npm, installed TypeScript and @types/node, created tsconfig.json, and updated README.md with usage instructions. (2024-06-17 15:31) 
+- [infrastructure] Add TypeScript support: initialized npm, installed TypeScript and @types/node, created tsconfig.json, and updated README.md with usage instructions. (2024-06-17 15:31)
+- [content][screenshot-fallback] Fix cropping logic to use viewport coordinates scaled by devicePixelRatio for accurate screenshot fallback. (2024-06-17 18:00) 
