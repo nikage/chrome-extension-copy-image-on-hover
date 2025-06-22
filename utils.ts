@@ -22,4 +22,12 @@ export function getFormattedImageTag(img: HTMLImageElement, settings: TagSetting
       }
       return tag;
   }
+}
+
+export function mergeSettings(defaults: TagSettings, overrides: Partial<TagSettings>): TagSettings {
+  return { ...defaults, ...overrides };
+}
+
+export function shouldShowTagOptions(copyMode: string): boolean {
+  return copyMode !== 'image';
 } 
