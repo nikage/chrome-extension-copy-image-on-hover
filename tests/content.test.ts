@@ -1,4 +1,4 @@
-import { getFormattedImageTag, TagSettings, mergeSettings, shouldShowTagOptions } from './utils';
+import { getFormattedImageTag, TagSettings, mergeSettings, shouldShowTagOptions } from '../src/utils';
 
 describe('getFormattedImageTag', () => {
   it('returns minimal tag when settings.stripAttributes is true', () => {

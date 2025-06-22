@@ -35,10 +35,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'settingsUpdated') {
     settings = message.settings;
   }
-  if (message.type === 'ping') {
-    sendResponse({ pong: true });
-    return true;
-  }
 });
 
 /**
@@ -91,44 +87,6 @@ async function copyImageToClipboard(img: HTMLImageElement): Promise<boolean> {
   }
 }
 
-function showToast(message: string, error: boolean = false) {
-  let toast = document.getElementById('toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'toast';
-    toast.style.position = 'fixed';
-    toast.style.left = '50%';
-    toast.style.bottom = '18px';
-    toast.style.transform = 'translateX(-50%)';
-    toast.style.minWidth = '120px';
-    toast.style.maxWidth = '90%';
-    toast.style.background = 'rgba(16, 19, 26, 0.98)';
-    toast.style.color = error ? '#ff4c4c' : '#00eaff';
-    toast.style.borderRadius = '8px';
-    toast.style.padding = '10px 24px';
-    toast.style.fontSize = '15px';
-    toast.style.textAlign = 'center';
-    toast.style.boxShadow = '0 0 8px #00eaff33';
-    toast.style.opacity = '0';
-    toast.style.pointerEvents = 'none';
-    toast.style.zIndex = '10000';
-    toast.style.transition = 'opacity 0.3s, bottom 0.3s';
-    document.body.appendChild(toast);
-  }
-  toast.textContent = message;
-  toast.style.color = error ? '#ff4c4c' : '#00eaff';
-  toast.style.opacity = '1';
-  toast.style.bottom = '32px';
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.bottom = '18px';
-  }, 1800);
-}
-
-function isCopyFormat(val: string): val is 'full' | 'minimal' | 'markdown' {
-  return val === 'full' || val === 'minimal' || val === 'markdown';
-}
-
 /**
  * Handles the copy operation based on user settings
  * @returns {Promise<void>}
@@ -136,25 +94,15 @@ function isCopyFormat(val: string): val is 'full' | 'minimal' | 'markdown' {
 async function handleCopy(): Promise<void> {
   if (!hoveredImage) return;
   try {
-    console.log('copyMode:', settings.copyMode);
     let success = true;
     if (settings.copyMode === 'both' || settings.copyMode === 'image') {
       success = await copyImageToClipboard(hoveredImage);
-      if (!success) {
-        showToast('Failed to copy image', true);
-        if (settings.showFeedback && hoveredImage) {
-          const originalBorder = hoveredImage.style.border;
-          hoveredImage.style.border = '2px solid #ff4c4c';
-          setTimeout(() => {
-            if (hoveredImage) hoveredImage.style.border = originalBorder;
-          }, 700);
-        }
-        return;
-      }
     }
     if (settings.copyMode === 'both' || settings.copyMode === 'tag') {
-      const copyFormat = isCopyFormat(settings.copyFormat) ? settings.copyFormat : 'full';
-      const imgTag = getFormattedImageTag(hoveredImage, { ...settings, copyFormat });
+      const imgTag = getFormattedImageTag(hoveredImage, {
+        ...settings,
+        copyFormat: settings.copyFormat as 'full' | 'minimal' | 'markdown'
+      });
       await navigator.clipboard.writeText(imgTag);
     }
     if (settings.showFeedback && success && hoveredImage) {
@@ -164,12 +112,8 @@ async function handleCopy(): Promise<void> {
         if (hoveredImage) hoveredImage.style.border = originalBorder;
       }, 500);
     }
-    if (success) {
-      showToast('Copied!', false);
-    }
   } catch (err) {
     console.error('Failed to copy:', err);
-    showToast('Copy error', true);
   }
 }
 
