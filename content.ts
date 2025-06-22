@@ -59,32 +59,7 @@ document.addEventListener('mouseout', (event) => {
   }
 });
 
-/**
- * Formats the image tag according to user settings
- * @param {HTMLImageElement} img - The image element to format
- * @returns {string} The formatted image tag or markdown
- */
-function getFormattedImageTag(img: HTMLImageElement): string {
-  if (settings.stripAttributes) {
-    return `<img src="${img.src}">`;
-  }
-
-  switch (settings.copyFormat) {
-    case 'minimal':
-      return `<img src="${img.src}">`;
-    case 'markdown':
-      const altText = img.alt || 'image';
-      return `![${altText}](${img.src})`;
-    case 'full':
-    default:
-      let tag = img.outerHTML;
-      if (!settings.includeSize) {
-        tag = tag.replace(/ width="[^"]*"/, '')
-                 .replace(/ height="[^"]*"/, '');
-      }
-      return tag;
-  }
-}
+import { getFormattedImageTag } from './utils';
 
 /**
  * Copies an image to the clipboard using the Canvas API
@@ -124,7 +99,7 @@ async function handleCopy(): Promise<void> {
       success = await copyImageToClipboard(hoveredImage);
     }
     if (settings.copyMode === 'both' || settings.copyMode === 'tag') {
-      const imgTag = getFormattedImageTag(hoveredImage);
+      const imgTag = getFormattedImageTag(hoveredImage, settings);
       await navigator.clipboard.writeText(imgTag);
     }
     if (settings.showFeedback && success && hoveredImage) {
